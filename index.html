@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Контроль Пропускного Пункта — Не Человек</title>
+    <title>КПП — Контроль Человечности</title>
     <style>
         * {
             box-sizing: border-box;
@@ -13,7 +13,7 @@
         }
 
         body {
-            background-color: #0d0d0d;
+            background-color: #050505;
             color: #dcdcdc;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
@@ -23,226 +23,373 @@
             overflow: hidden;
         }
 
+        /* Реалистичная металлическая консоль */
         #game-container {
-            width: 900px;
-            height: 650px;
-            background: #1a1a1a;
-            border: 4px solid #333;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+            width: 960px;
+            height: 680px;
+            background: linear-gradient(145deg, #1f2228, #111317);
+            border: 6px solid #3a3f47;
+            border-radius: 8px;
+            box-shadow: inset 0 0 15px rgba(255,255,255,0.05), 0 0 40px rgba(0, 0, 0, 0.95);
             display: flex;
             flex-direction: column;
             position: relative;
+            padding: 10px;
         }
 
-        /* Верхняя панель */
+        /* Заклёпки на панели */
+        .rivet {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #4a505a;
+            border-radius: 50%;
+            box-shadow: inset 1px 1px 2px #000, 1px 1px 1px rgba(255,255,255,0.2);
+        }
+        .r-tl { top: 6px; left: 6px; }
+        .r-tr { top: 6px; right: 6px; }
+        .r-bl { bottom: 6px; left: 6px; }
+        .r-br { bottom: 6px; right: 6px; }
+
+        /* Верхняя информационная панель */
         #top-bar {
             height: 50px;
-            background: #111;
-            border-bottom: 2px solid #333;
+            background: #0a0b0d;
+            border: 2px solid #2a2e35;
+            border-radius: 4px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 0 20px;
+            margin-bottom: 10px;
+        }
+
+        .led-panel {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
         .stat-box {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
-            color: #ff4444;
+            color: #ff3333;
+            text-shadow: 0 0 6px rgba(255, 51, 51, 0.6);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* Главный экран проверки */
+        .led-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ff0000;
+            box-shadow: 0 0 8px #ff0000;
+        }
+
+        /* Главный экран */
         #main-screen {
             flex: 1;
             display: flex;
-            background: #050505;
-            position: relative;
+            gap: 10px;
         }
 
         #viewport {
-            flex: 2;
+            flex: 1.2;
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
-            border-right: 2px solid #222;
-            background: radial-gradient(circle, #222 0%, #050505 100%);
+            border: 3px solid #282c34;
+            border-radius: 4px;
+            background: radial-gradient(circle, #1a1c23 0%, #08090b 100%);
+            box-shadow: inset 0 0 20px #000;
         }
 
         canvas {
-            border: 2px solid #444;
-            background: #111;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+            border: 1px solid #3a3f4a;
+            background: #000;
         }
 
+        /* Панель инспекции */
         #inspection-panel {
             flex: 1;
-            padding: 15px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            background: #141414;
+            gap: 10px;
         }
 
-        .inspect-box {
+        .inspect-card {
             flex: 1;
-            border: 1px solid #333;
-            background: #090909;
+            border: 2px solid #2d323b;
+            border-radius: 4px;
+            background: #0f1115;
+            padding: 10px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
             position: relative;
         }
 
-        .inspect-title {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            font-size: 11px;
-            color: #777;
-            text-transform: uppercase;
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #22262f;
+            padding-bottom: 4px;
+            margin-bottom: 6px;
         }
 
-        /* Нижняя панель управления */
+        .card-title {
+            font-size: 12px;
+            color: #8a93a0;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            background: #331111;
+            border: 1px solid #662222;
+            color: #ff8888;
+            font-size: 10px;
+            padding: 2px 6px;
+            cursor: pointer;
+            border-radius: 2px;
+        }
+        .close-btn:hover { background: #551111; }
+
+        .card-body {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #bio-info {
+            font-size: 12px;
+            line-height: 1.6;
+            color: #abb2bf;
+            width: 100%;
+        }
+
+        #bio-info span {
+            color: #e5c07b;
+            font-weight: bold;
+        }
+
+        /* Нижний блок управления */
         #controls {
-            height: 110px;
-            background: #111;
-            border-top: 2px solid #333;
+            height: 90px;
+            background: #0e1013;
+            border: 2px solid #2a2e35;
+            border-radius: 4px;
+            margin-top: 10px;
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 10px;
+            padding: 0 10px;
+            gap: 10px;
         }
 
         .btn {
-            background: #222;
-            color: #fff;
-            border: 2px solid #444;
-            padding: 12px 20px;
+            background: linear-gradient(180deg, #2c313a, #1e222b);
+            color: #dcdcdc;
+            border: 1px solid #4b5263;
+            border-radius: 3px;
+            padding: 12px 14px;
             font-family: inherit;
+            font-size: 11px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.1s;
             text-transform: uppercase;
+            box-shadow: 0 3px 0 #111318;
         }
 
         .btn:hover {
-            background: #333;
-            border-color: #666;
+            background: linear-gradient(180deg, #3e4451, #2c313a);
+            color: #fff;
         }
 
         .btn:active {
-            transform: scale(0.96);
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #111318;
         }
 
         .btn-danger {
-            background: #600;
-            border-color: #a00;
+            background: linear-gradient(180deg, #881111, #550000);
+            border-color: #aa2222;
             color: #ffcccc;
+            box-shadow: 0 3px 0 #200;
         }
-
-        .btn-danger:hover {
-            background: #800;
-            border-color: #f00;
-        }
+        .btn-danger:hover { background: linear-gradient(180deg, #aa1111, #770000); }
 
         .btn-success {
-            background: #060;
-            border-color: #0a0;
+            background: linear-gradient(180deg, #117711, #004400);
+            border-color: #22aa22;
             color: #ccffcc;
+            box-shadow: 0 3px 0 #020;
         }
+        .btn-success:hover { background: linear-gradient(180deg, #119911, #006600); }
 
-        .btn-success:hover {
-            background: #080;
-            border-color: #0f0;
-        }
-
-        /* Эффект ЭЛТ мотора */
+        /* ЭЛТ Монитор Эффект */
         .scanline {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%);
             background-size: 100% 4px;
             pointer-events: none;
             z-index: 10;
         }
 
-        /* Оверлей паузы и сообщений */
+        /* Оверлеи */
         .overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(5, 5, 5, 0.92);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 20;
+            z-index: 30;
+            border-radius: 4px;
         }
 
         .hidden { display: none !important; }
 
-        h1 { color: #ff3333; margin-bottom: 20px; letter-spacing: 2px; }
-        p { margin-bottom: 20px; text-align: center; max-width: 500px; line-height: 1.5; }
+        /* Скример */
+        #screamer-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .shake {
+            animation: shakeAnim 0.1s infinite;
+        }
+
+        @keyframes shakeAnim {
+            0% { transform: translate(10px, 10px) scale(1.1); }
+            20% { transform: translate(-10px, -10px) scale(1.15); }
+            40% { transform: translate(-15px, 15px) scale(1.05); }
+            60% { transform: translate(15px, -5px) scale(1.2); }
+            80% { transform: translate(-5px, 15px) scale(1.1); }
+            100% { transform: translate(0, 0) scale(1.15); }
+        }
+
+        h1 { color: #ff3333; margin-bottom: 15px; letter-spacing: 2px; text-shadow: 0 0 10px #f00; }
+        p { margin-bottom: 20px; text-align: center; max-width: 550px; line-height: 1.5; font-size: 13px; color: #aaa; }
     </style>
 </head>
 <body>
 
 <div id="game-container">
+    <div class="rivet r-tl"></div>
+    <div class="rivet r-tr"></div>
+    <div class="rivet r-bl"></div>
+    <div class="rivet r-br"></div>
     <div class="scanline"></div>
 
+    <!-- Верхний статус -->
     <div id="top-bar">
-        <div class="stat-box">ОШИБКИ: <span id="errors">0</span>/3</div>
-        <div class="stat-box">ПРОВЕРЕНО: <span id="score">0</span></div>
+        <div class="led-panel">
+            <div class="stat-box"><div class="led-indicator"></div>ОШИБКИ: <span id="errors">0</span>/3</div>
+            <div class="stat-box" style="color: #4df;">ПЕРСОН: <span id="score">0</span></div>
+        </div>
         <button class="btn" id="btn-pause">ПАУЗА</button>
     </div>
 
+    <!-- Главный блок -->
     <div id="main-screen">
+        <!-- Окно с человеком -->
         <div id="viewport">
-            <canvas id="personCanvas" width="320" height="380"></canvas>
+            <canvas id="personCanvas" width="300" height="380"></canvas>
         </div>
         
+        <!-- Документы и инспекция -->
         <div id="inspection-panel">
-            <div class="inspect-box" id="teeth-box">
-                <span class="inspect-title">Зубы</span>
-                <canvas id="teethCanvas" width="180" height="120"></canvas>
+            <!-- Биография -->
+            <div class="inspect-card">
+                <div class="card-header">
+                    <span class="card-title">Паспорт / Биография</span>
+                </div>
+                <div class="card-body" style="gap: 10px;">
+                    <canvas id="photoCanvas" width="90" height="110"></canvas>
+                    <div id="bio-info">
+                        Имя: <span id="bio-name">-</span><br>
+                        Возраст: <span id="bio-age">-</span><br>
+                        Волосы: <span id="bio-hair">-</span><br>
+                        Глаза: <span id="bio-eyes">-</span><br>
+                        ID: <span id="bio-id">-</span>
+                    </div>
+                </div>
             </div>
-            <div class="inspect-box" id="hands-box">
-                <span class="inspect-title">Руки</span>
-                <canvas id="handsCanvas" width="180" height="120"></canvas>
+
+            <!-- Зубы -->
+            <div class="inspect-card">
+                <div class="card-header">
+                    <span class="card-title">Зубы</span>
+                    <button class="close-btn" id="btn-close-teeth">ЗАКРЫТЬ</button>
+                </div>
+                <div class="card-body">
+                    <canvas id="teethCanvas" width="220" height="90"></canvas>
+                </div>
+            </div>
+
+            <!-- Руки -->
+            <div class="inspect-card">
+                <div class="card-header">
+                    <span class="card-title">Руки</span>
+                    <button class="close-btn" id="btn-close-hands">ЗАКРЫТЬ</button>
+                </div>
+                <div class="card-body">
+                    <canvas id="handsCanvas" width="220" height="90"></canvas>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Нижняя панель действий -->
     <div id="controls">
-        <button class="btn" id="btn-teeth">Показать зубы</button>
-        <button class="btn" id="btn-hands">Показать руки</button>
+        <button class="btn" id="btn-teeth">Осмотр зубов</button>
+        <button class="btn" id="btn-hands">Осмотр рук</button>
         <button class="btn btn-success" id="btn-pass">ПРОПУСТИТЬ</button>
-        <button class="btn btn-danger" id="btn-shoot">ВЫСТРЕЛИВАТЬ</button>
+        <button class="btn btn-danger" id="btn-shoot">ЛИКВИДИРОВАТЬ</button>
     </div>
 
+    <!-- Скример -->
+    <div id="screamer-overlay" class="hidden">
+        <canvas id="screamerCanvas" width="600" height="500"></canvas>
+    </div>
+
+    <!-- Пауза -->
     <div id="pause-screen" class="overlay hidden">
         <h1>ПАУЗА</h1>
-        <p>Инспекция приостановлена.</p>
+        <p>Терминал временно заблокирован.</p>
         <button class="btn" id="btn-resume">ПРОДОЛЖИТЬ</button>
     </div>
 
+    <!-- Старт -->
     <div id="start-screen" class="overlay">
-        <h1>НЕ ЧЕЛОВЕК</h1>
-        <p>Внимательно проверяйте прибывающих.<br>
-        Приказывайте показать зубы и руки. Если обнаружите аномалию (лишние пальцы, острые зубы монстра) — <b>ликвидируйте</b>.<br>
-        Если человек нормален — <b>пропустите</b>.</p>
+        <h1>ТЕРМИНАЛ КПП v4.1</h1>
+        <p>Внимательно сверяйте субъекта с паспортом.<br>
+        1. Сверяйте <b>цвет глаз и цвет/стиль волос</b> на фотографии и в описании.<br>
+        2. Приказывайте показать <b>зубы</b> (у аномалий монструозные клыки) и <b>руки</b> (у аномалий 6 пальцев).<br>
+        3. Если есть хоть одна аномалия — <b>ЛИКВИДИРУЙТЕ</b>. При ошибке запустится протокол тревоги.</p>
         <button class="btn btn-danger" id="btn-start">НАЧАТЬ СМЕНУ</button>
     </div>
 </div>
 
 <script>
-// --- Аудиосистема (Web Audio API) ---
-class AudioSystem {
+// --- АУДИО СИСТЕМА ---
+class SoundSystem {
     constructor() {
         this.ctx = null;
-        this.bgmNode = null;
-        this.isMuted = false;
     }
 
     init() {
@@ -252,297 +399,410 @@ class AudioSystem {
         }
     }
 
-    // Фоновая мрачная эмбиент-музыка
     startBGM() {
         if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(40, this.ctx.currentTime); // Низкий гул
-        
-        // Модуляция для эффекта тревоги
-        const lfo = this.ctx.createOscillator();
-        lfo.frequency.setValueAtTime(0.2, this.ctx.currentTime);
-        const lfoGain = this.ctx.createGain();
-        lfoGain.gain.setValueAtTime(5, this.ctx.currentTime);
-        lfo.connect(osc.frequency);
-        lfo.start();
-
-        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
-        
+        osc.frequency.setValueAtTime(35, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start();
-        this.bgmNode = osc;
     }
 
-    // Звук выстрела
     playShot() {
         if (!this.ctx) return;
-        const bufferSize = this.ctx.sampleRate * 0.5;
+        const bufferSize = this.ctx.sampleRate * 0.4;
         const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
         const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-            data[i] = Math.random() * 2 - 1;
-        }
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
 
         const noise = this.ctx.createBufferSource();
         noise.buffer = buffer;
-
         const filter = this.ctx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(1000, this.ctx.currentTime);
-        filter.frequency.exponentialRampToValueAtTime(10, this.ctx.currentTime + 0.4);
+        filter.frequency.setValueAtTime(800, this.ctx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(20, this.ctx.currentTime + 0.35);
 
         const gain = this.ctx.createGain();
         gain.gain.setValueAtTime(1, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.35);
 
         noise.connect(filter);
         filter.connect(gain);
         gain.connect(this.ctx.destination);
-
         noise.start();
     }
 
-    // Звук показа зубов (влажный/механический звук)
-    playTeethSound() {
+    playInspectSound() {
         if (!this.ctx) return;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
-        osc.frequency.linearRampToValueAtTime(300, this.ctx.currentTime + 0.15);
-        osc.frequency.linearRampToValueAtTime(100, this.ctx.currentTime + 0.3);
-
-        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
-
+        osc.frequency.setValueAtTime(120, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(240, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start();
-        osc.stop(this.ctx.currentTime + 0.3);
+        osc.stop(this.ctx.currentTime + 0.1);
+    }
+
+    // Скример звук
+    playScreamerSound() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(150, this.ctx.currentTime + 1.2);
+
+        // Белый шум поверх
+        const bufferSize = this.ctx.sampleRate * 1.2;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        gain.gain.setValueAtTime(0.8, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 1.2);
+
+        osc.connect(gain);
+        noise.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        noise.start();
     }
 }
 
-const audio = new AudioSystem();
+const sound = new SoundSystem();
 
-// --- Игровая логика ---
+// --- ДАННЫЕ И ГЕНЕРАЦИЯ ---
+const NAMES = ["Алексей", "Дмитрий", "Елена", "Ольга", "Иван", "Сергей", "Наталья", "Анна", "Михаил", "Татьяна"];
+const HAIR_COLORS = [
+    { name: "Чёрные", hex: "#1a1a1a" },
+    { name: "Шатен", hex: "#4a2e18" },
+    { name: "Блондин", hex: "#d4b26f" },
+    { name: "Рыжие", hex: "#b84a1d" }
+];
+const EYE_COLORS = [
+    { name: "Карие", hex: "#3b2417" },
+    { name: "Голубые", hex: "#2b5c8f" },
+    { name: "Зелёные", hex: "#2e6f40" }
+];
+const HAIR_STYLES = ["Короткие", "Каре", "Ирокез", "Пышные"];
+
 let score = 0;
 let errors = 0;
 let isPaused = false;
 let currentSubject = null;
-let teethRevealed = false;
-let handsRevealed = false;
 
-// Элементы UI
-const personCanvas = document.getElementById('personCanvas');
-const teethCanvas = document.getElementById('teethCanvas');
-const handsCanvas = document.getElementById('handsCanvas');
-const pCtx = personCanvas.getContext('2d');
-const tCtx = teethCanvas.getContext('2d');
-const hCtx = handsCanvas.getContext('2d');
+// Холсты
+const pCanvas = document.getElementById('personCanvas');
+const photoCanvas = document.getElementById('photoCanvas');
+const tCanvas = document.getElementById('teethCanvas');
+const hCanvas = document.getElementById('handsCanvas');
+const sCanvas = document.getElementById('screamerCanvas');
 
-const scoreEl = document.getElementById('score');
-const errorsEl = document.getElementById('errors');
+const pCtx = pCanvas.getContext('2d');
+const photoCtx = photoCanvas.getContext('2d');
+const tCtx = tCanvas.getContext('2d');
+const hCtx = hCanvas.getContext('2d');
+const sCtx = sCanvas.getContext('2d');
 
 // Генерация субъекта
 function generateSubject() {
-    teethRevealed = false;
-    handsRevealed = false;
-    
-    // Очистка доп. холстов
-    tCtx.clearRect(0, 0, teethCanvas.width, teethCanvas.height);
-    hCtx.clearRect(0, 0, handsCanvas.width, handsCanvas.height);
+    clearInspect();
 
     const isAnomaly = Math.random() < 0.5;
-    let anomalyType = 'none'; // 'teeth', 'hands', 'both'
+    const anomalyTypes = ['teeth', 'hands', 'photo_hair', 'photo_eyes'];
+    const chosenAnomaly = isAnomaly ? anomalyTypes[Math.floor(Math.random() * anomalyTypes.length)] : 'none';
 
-    if (isAnomaly) {
-        const types = ['teeth', 'hands', 'both'];
-        anomalyType = types[Math.floor(Math.random() * types.length)];
+    const realHair = HAIR_COLORS[Math.floor(Math.random() * HAIR_COLORS.length)];
+    const realEye = EYE_COLORS[Math.floor(Math.random() * EYE_COLORS.length)];
+    const realStyleIdx = Math.floor(Math.random() * HAIR_STYLES.length);
+
+    // Данные для фото (могут быть поддельной аномалией)
+    let photoHair = realHair;
+    let photoEye = realEye;
+
+    if (chosenAnomaly === 'photo_hair') {
+        photoHair = HAIR_COLORS.find(h => h.hex !== realHair.hex);
+    } else if (chosenAnomaly === 'photo_eyes') {
+        photoEye = EYE_COLORS.find(e => e.hex !== realEye.hex);
     }
 
     currentSubject = {
         isAnomaly: isAnomaly,
-        anomalyType: anomalyType,
-        skinColor: `hsl(${Math.random() * 30 + 15}, 30%, ${Math.random() * 20 + 40}%)`,
-        eyeColor: Math.random() > 0.5 ? '#3b2417' : '#21495c'
+        anomalyType: chosenAnomaly,
+        skinColor: `hsl(${Math.random() * 25 + 15}, 35%, ${Math.random() * 20 + 45}%)`,
+        realHair: realHair,
+        realEye: realEye,
+        realStyleIdx: realStyleIdx,
+        photoHair: photoHair,
+        photoEye: photoEye,
+        name: NAMES[Math.floor(Math.random() * NAMES.length)],
+        age: Math.floor(Math.random() * 40) + 20,
+        idNum: Math.floor(Math.random() * 899999) + 100000
     };
 
-    drawPerson();
+    drawPerson(pCtx, 150, 190, currentSubject.skinColor, currentSubject.realEye.hex, currentSubject.realHair.hex, currentSubject.realStyleIdx);
+    drawPerson(photoCtx, 45, 55, currentSubject.skinColor, currentSubject.photoEye.hex, currentSubject.photoHair.hex, currentSubject.realStyleIdx, 0.45);
+    
+    // Заполнение текста био
+    document.getElementById('bio-name').textContent = currentSubject.name;
+    document.getElementById('bio-age').textContent = currentSubject.age;
+    document.getElementById('bio-hair').textContent = currentSubject.photoHair.name;
+    document.getElementById('bio-eyes').textContent = currentSubject.photoEye.name;
+    document.getElementById('bio-id').textContent = '#' + currentSubject.idNum;
 }
 
-// Отрисовка человека (Фотографический реалистичный стиль через Canvas SVG/Primitives)
-function drawPerson() {
-    pCtx.clearRect(0, 0, personCanvas.width, personCanvas.height);
+// Отрисовка человека / Фото
+function drawPerson(ctx, cx, cy, skin, eyeHex, hairHex, hairStyle, scale = 1) {
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.save();
 
-    // Тело / Одежда
-    pCtx.fillStyle = '#22252a';
-    pCtx.fillRect(60, 230, 200, 150);
+    // Плечи
+    ctx.fillStyle = '#222730';
+    ctx.fillRect(cx - 70 * scale, cy + 80 * scale, 140 * scale, 120 * scale);
 
     // Шея
-    pCtx.fillStyle = currentSubject.skinColor;
-    pCtx.fillRect(135, 180, 50, 60);
+    ctx.fillStyle = skin;
+    ctx.fillRect(cx - 20 * scale, cy + 40 * scale, 40 * scale, 50 * scale);
 
     // Голова
-    pCtx.beginPath();
-    pCtx.ellipse(160, 130, 65, 80, 0, 0, Math.PI * 2);
-    pCtx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, 50 * scale, 65 * scale, 0, 0, Math.PI * 2);
+    ctx.fill();
 
     // Глаза
-    pCtx.fillStyle = '#fff';
-    pCtx.beginPath();
-    pCtx.ellipse(135, 120, 12, 7, 0, 0, Math.PI * 2);
-    pCtx.ellipse(185, 120, 12, 7, 0, 0, Math.PI * 2);
-    pCtx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.ellipse(cx - 18 * scale, cy - 5 * scale, 9 * scale, 5 * scale, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx + 18 * scale, cy - 5 * scale, 9 * scale, 5 * scale, 0, 0, Math.PI * 2);
+    ctx.fill();
 
-    pCtx.fillStyle = currentSubject.eyeColor;
-    pCtx.beginPath();
-    pCtx.arc(135, 120, 5, 0, Math.PI * 2);
-    pCtx.arc(185, 120, 5, 0, Math.PI * 2);
-    pCtx.fill();
+    ctx.fillStyle = eyeHex;
+    ctx.beginPath();
+    ctx.arc(cx - 18 * scale, cy - 5 * scale, 4 * scale, 0, Math.PI * 2);
+    ctx.arc(cx + 18 * scale, cy - 5 * scale, 4 * scale, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Нос
+    ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+    ctx.lineWidth = 2 * scale;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - 5 * scale);
+    ctx.lineTo(cx - 3 * scale, cy + 15 * scale);
+    ctx.lineTo(cx + 3 * scale, cy + 15 * scale);
+    ctx.stroke();
 
     // Рот (закрыт)
-    pCtx.strokeStyle = '#5a2a2a';
-    pCtx.lineWidth = 3;
-    pCtx.beginPath();
-    pCtx.moveTo(140, 170);
-    pCtx.lineTo(180, 170);
-    pCtx.stroke();
+    ctx.strokeStyle = '#662222';
+    ctx.beginPath();
+    ctx.moveTo(cx - 15 * scale, cy + 32 * scale);
+    ctx.lineTo(cx + 15 * scale, cy + 32 * scale);
+    ctx.stroke();
+
+    // Волосы
+    ctx.fillStyle = hairHex;
+    if (hairStyle === 0) { // Короткие
+        ctx.beginPath();
+        ctx.arc(cx, cy - 15 * scale, 53 * scale, Math.PI, 0);
+        ctx.fill();
+    } else if (hairStyle === 1) { // Каре
+        ctx.fillRect(cx - 55 * scale, cy - 65 * scale, 110 * scale, 70 * scale);
+    } else if (hairStyle === 2) { // Ирокез
+        ctx.fillRect(cx - 12 * scale, cy - 80 * scale, 24 * scale, 50 * scale);
+    } else { // Пышные
+        ctx.beginPath();
+        ctx.arc(cx, cy - 25 * scale, 62 * scale, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    ctx.restore();
 }
 
-// Отрисовка зубов крупным планом
+// Отрисовка зубов
 function drawTeeth() {
-    tCtx.clearRect(0, 0, teethCanvas.width, teethCanvas.height);
-    
-    // Губы / Десны
-    tCtx.fillStyle = '#7a2222';
-    tCtx.fillRect(10, 10, 160, 100);
+    tCtx.clearRect(0, 0, tCanvas.width, tCanvas.height);
+    tCtx.fillStyle = '#661111';
+    tCtx.fillRect(10, 10, 200, 70);
 
-    tCtx.fillStyle = '#fff8e7'; // Цвет зубов
-    
-    const isBadTeeth = currentSubject.anomalyType === 'teeth' || currentSubject.anomalyType === 'both';
+    const isBad = currentSubject.anomalyType === 'teeth';
 
-    if (!isBadTeeth) {
-        // НОРМАЛЬНЫЕ ЗУБЫ (ровные прямоугольники)
+    if (!isBad) {
+        // Норма
+        tCtx.fillStyle = '#fff8e7';
         for (let i = 0; i < 8; i++) {
-            // Верхние
-            tCtx.fillRect(25 + i * 16, 25, 14, 25);
-            tCtx.strokeRect(25 + i * 16, 25, 14, 25);
-            // Нижние
-            tCtx.fillRect(25 + i * 16, 65, 14, 25);
-            tCtx.strokeRect(25 + i * 16, 65, 14, 25);
+            tCtx.fillRect(20 + i * 22, 15, 18, 22);
+            tCtx.fillRect(20 + i * 22, 53, 18, 22);
         }
     } else {
-        // АНОМАЛЬНЫЕ ЗУБЫ (острые клыки монстра)
-        tCtx.fillStyle = '#e6e68a';
+        // Монстр
+        tCtx.fillStyle = '#ffffaa';
         for (let i = 0; i < 9; i++) {
-            // Верхние острые
             tCtx.beginPath();
-            tCtx.moveTo(20 + i * 15, 20);
-            tCtx.lineTo(27 + i * 15, 55);
-            tCtx.lineTo(34 + i * 15, 20);
+            tCtx.moveTo(15 + i * 20, 15);
+            tCtx.lineTo(23 + i * 20, 42);
+            tCtx.lineTo(31 + i * 20, 15);
             tCtx.fill();
 
-            // Нижние острые
             tCtx.beginPath();
-            tCtx.moveTo(20 + i * 15, 95);
-            tCtx.lineTo(27 + i * 15, 60);
-            tCtx.lineTo(34 + i * 15, 95);
+            tCtx.moveTo(15 + i * 20, 75);
+            tCtx.lineTo(23 + i * 20, 48);
+            tCtx.lineTo(31 + i * 20, 75);
             tCtx.fill();
         }
     }
 }
 
-// Отрисовка рук крупным планом
+// Отрисовка рук
 function drawHands() {
-    hCtx.clearRect(0, 0, handsCanvas.width, handsCanvas.height);
-    
+    hCtx.clearRect(0, 0, hCanvas.width, hCanvas.height);
     hCtx.fillStyle = currentSubject.skinColor;
-    const isBadHands = currentSubject.anomalyType === 'hands' || currentSubject.anomalyType === 'both';
 
-    const fingerCount = isBadHands ? 6 : 5; // Аномалия: 6 пальцев на руке
+    const isBad = currentSubject.anomalyType === 'hands';
+    const fingers = isBad ? 6 : 5;
 
-    // Отрисовка ладони
-    hCtx.fillRect(40, 60, 100, 50);
+    hCtx.fillRect(30, 45, 160, 35);
+    const w = 150 / fingers;
 
-    // Пальцы
-    const fingerWidth = 100 / fingerCount - 3;
-    for (let i = 0; i < fingerCount; i++) {
-        hCtx.fillRect(42 + i * (fingerWidth + 3), 15, fingerWidth, 50);
-        
-        // Ногти
-        hCtx.fillStyle = isBadHands ? '#300' : '#e0c0c0';
-        hCtx.fillRect(44 + i * (fingerWidth + 3), 17, fingerWidth - 4, 10);
+    for (let i = 0; i < fingers; i++) {
+        hCtx.fillRect(32 + i * w, 10, w - 4, 40);
+        hCtx.fillStyle = isBad ? '#220000' : '#dcaaaa';
+        hCtx.fillRect(34 + i * w, 12, w - 8, 8);
         hCtx.fillStyle = currentSubject.skinColor;
     }
 }
 
-// Обработка вердикта игрока
+function clearInspect() {
+    tCtx.clearRect(0, 0, tCanvas.width, tCanvas.height);
+    hCtx.clearRect(0, 0, hCanvas.width, hCanvas.height);
+}
+
+// Показ скримера
+function triggerScreamer(callback) {
+    sound.playScreamerSound();
+    const screamerOverlay = document.getElementById('screamer-overlay');
+    screamerOverlay.classList.remove('hidden');
+    screamerOverlay.classList.add('shake');
+
+    // Отрисовка лица скримера
+    sCtx.fillStyle = '#050000';
+    sCtx.fillRect(0, 0, 600, 500);
+
+    // Страшные глаза
+    sCtx.fillStyle = '#ff0000';
+    sCtx.beginPath();
+    sCtx.arc(200, 200, 45, 0, Math.PI * 2);
+    sCtx.arc(400, 200, 45, 0, Math.PI * 2);
+    sCtx.fill();
+
+    sCtx.fillStyle = '#000';
+    sCtx.beginPath();
+    sCtx.arc(200, 200, 10, 0, Math.PI * 2);
+    sCtx.arc(400, 200, 10, 0, Math.PI * 2);
+    sCtx.fill();
+
+    // Огромная пасть
+    sCtx.fillStyle = '#fff';
+    sCtx.beginPath();
+    sCtx.ellipse(300, 340, 120, 90, 0, 0, Math.PI * 2);
+    sCtx.fill();
+
+    sCtx.fillStyle = '#000';
+    sCtx.beginPath();
+    sCtx.ellipse(300, 340, 110, 80, 0, 0, Math.PI * 2);
+    sCtx.fill();
+
+    // Клыки
+    sCtx.fillStyle = '#ffeedd';
+    for(let i=0; i<12; i++) {
+        sCtx.beginPath();
+        sCtx.moveTo(200 + i*18, 260);
+        sCtx.lineTo(209 + i*18, 320);
+        sCtx.lineTo(218 + i*18, 260);
+        sCtx.fill();
+    }
+
+    setTimeout(() => {
+        screamerOverlay.classList.add('hidden');
+        screamerOverlay.classList.remove('shake');
+        callback();
+    }, 1300);
+}
+
+// Вердикт
 function handleVerdict(shot) {
     if (isPaused) return;
 
-    if (shot) {
-        audio.playShot();
-    }
+    if (shot) sound.playShot();
 
-    const correctAction = (shot && currentSubject.isAnomaly) || (!shot && !currentSubject.isAnomaly);
+    const correct = (shot && currentSubject.isAnomaly) || (!shot && !currentSubject.isAnomaly);
 
-    if (correctAction) {
+    if (correct) {
         score++;
-        scoreEl.textContent = score;
+        document.getElementById('score').textContent = score;
+        generateSubject();
     } else {
         errors++;
-        errorsEl.textContent = errors;
-        if (errors >= 3) {
-            alert(`ИГРА ОКОНЧЕНА! Вы пропустили слишком много аномалий или убили невиновных.\nВаш счет: ${score}`);
-            score = 0;
-            errors = 0;
-            scoreEl.textContent = score;
-            errorsEl.textContent = errors;
-        }
+        document.getElementById('errors').textContent = errors;
+        
+        triggerScreamer(() => {
+            if (errors >= 3) {
+                alert(`СМЕНА ОКОНЧЕНА. Вы совершили слишком много ошибок.\nПроверено граждан: ${score}`);
+                score = 0;
+                errors = 0;
+                document.getElementById('score').textContent = score;
+                document.getElementById('errors').textContent = errors;
+            }
+            generateSubject();
+        });
     }
-
-    generateSubject();
 }
 
-// --- Обработчики событий ---
+// --- СОБЫТИЯ ---
 document.getElementById('btn-start').addEventListener('click', () => {
-    audio.init();
+    sound.init();
     document.getElementById('start-screen').classList.add('hidden');
     generateSubject();
 });
 
 document.getElementById('btn-teeth').addEventListener('click', () => {
-    if (isPaused) return;
-    audio.playTeethSound();
-    teethRevealed = true;
+    sound.playInspectSound();
     drawTeeth();
 });
 
+document.getElementById('btn-close-teeth').addEventListener('click', () => {
+    sound.playInspectSound();
+    tCtx.clearRect(0, 0, tCanvas.width, tCanvas.height);
+});
+
 document.getElementById('btn-hands').addEventListener('click', () => {
-    if (isPaused) return;
-    audio.playTeethSound();
-    handsRevealed = true;
+    sound.playInspectSound();
     drawHands();
+});
+
+document.getElementById('btn-close-hands').addEventListener('click', () => {
+    sound.playInspectSound();
+    hCtx.clearRect(0, 0, hCanvas.width, hCanvas.height);
 });
 
 document.getElementById('btn-pass').addEventListener('click', () => handleVerdict(false));
 document.getElementById('btn-shoot').addEventListener('click', () => handleVerdict(true));
 
-// Пауза
-const pauseScreen = document.getElementById('pause-screen');
 document.getElementById('btn-pause').addEventListener('click', () => {
     isPaused = true;
-    pauseScreen.classList.remove('hidden');
+    document.getElementById('pause-screen').classList.remove('hidden');
 });
 
 document.getElementById('btn-resume').addEventListener('click', () => {
     isPaused = false;
-    pauseScreen.classList.add('hidden');
+    document.getElementById('pause-screen').classList.add('hidden');
 });
 </script>
 </body>
