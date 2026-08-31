@@ -3,182 +3,547 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FREE ROBUX GENERATOR 2026</title>
+    <title>Контроль Пропускного Пункта — Не Человек</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
         body {
-            background-color: #191B1D;
-            color: #FFFFFF;
-            font-family: 'Arial', sans-serif;
+            background-color: #0d0d0d;
+            color: #dcdcdc;
+            font-family: 'Courier New', Courier, monospace;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
             overflow: hidden;
         }
 
-        .container {
-            background-color: #262B30;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-            border: 2px solid #00A2FF;
+        #game-container {
+            width: 900px;
+            height: 650px;
+            background: #1a1a1a;
+            border: 4px solid #333;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
 
-        h1 {
-            color: #00A2FF;
-            font-size: 24px;
-            margin-bottom: 20px;
+        /* Верхняя панель */
+        #top-bar {
+            height: 50px;
+            background: #111;
+            border-bottom: 2px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .stat-box {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ff4444;
+        }
+
+        /* Главный экран проверки */
+        #main-screen {
+            flex: 1;
+            display: flex;
+            background: #050505;
+            position: relative;
+        }
+
+        #viewport {
+            flex: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            border-right: 2px solid #222;
+            background: radial-gradient(circle, #222 0%, #050505 100%);
+        }
+
+        canvas {
+            border: 2px solid #444;
+            background: #111;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+        }
+
+        #inspection-panel {
+            flex: 1;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #141414;
+        }
+
+        .inspect-box {
+            flex: 1;
+            border: 1px solid #333;
+            background: #090909;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .inspect-title {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            font-size: 11px;
+            color: #777;
             text-transform: uppercase;
         }
 
-        .step {
-            display: none;
-        }
-
-        .step.active {
-            display: block;
-        }
-
-        input[type="text"] {
-            width: 80%;
+        /* Нижняя панель управления */
+        #controls {
+            height: 110px;
+            background: #111;
+            border-top: 2px solid #333;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
             padding: 10px;
-            margin: 15px 0;
-            border: 1px solid #444;
-            border-radius: 4px;
-            background-color: #111;
+        }
+
+        .btn {
+            background: #222;
             color: #fff;
-            font-size: 16px;
-            text-align: center;
-        }
-
-        button {
-            background-color: #00A2FF;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 18px;
+            border: 2px solid #444;
+            padding: 12px 20px;
+            font-family: inherit;
             font-weight: bold;
-            border-radius: 4px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s;
+            text-transform: uppercase;
         }
 
-        button:hover {
-            background-color: #0082CC;
+        .btn:hover {
+            background: #333;
+            border-color: #666;
         }
 
-        /* Стили для скримера */
-        #screamer-layer {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: black;
-            z-index: 9999;
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-danger {
+            background: #600;
+            border-color: #a00;
+            color: #ffcccc;
+        }
+
+        .btn-danger:hover {
+            background: #800;
+            border-color: #f00;
+        }
+
+        .btn-success {
+            background: #060;
+            border-color: #0a0;
+            color: #ccffcc;
+        }
+
+        .btn-success:hover {
+            background: #080;
+            border-color: #0f0;
+        }
+
+        /* Эффект ЭЛТ мотора */
+        .scanline {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Оверлей паузы и сообщений */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            z-index: 20;
         }
 
-        #screamer-layer img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            /* Эффект тряски */
-            animation: shake 0.1s infinite;
-        }
+        .hidden { display: none !important; }
 
-        @keyframes shake {
-            0% { transform: translate(2px, 1px) rotate(0deg); }
-            10% { transform: translate(-1px, -2px) rotate(-1deg); }
-            20% { transform: translate(-3px, 0px) rotate(1deg); }
-            30% { transform: translate(0px, 2px) rotate(0deg); }
-            40% { transform: translate(1px, -1px) rotate(1deg); }
-            50% { transform: translate(-1px, 2px) rotate(-1deg); }
-            60% { transform: translate(-3px, 1px) rotate(0deg); }
-            75% { transform: translate(2px, 1px) rotate(-1deg); }
-            90% { transform: translate(-1px, -1px) rotate(1deg); }
-            100% { transform: translate(1px, -2px) rotate(0deg); }
-        }
+        h1 { color: #ff3333; margin-bottom: 20px; letter-spacing: 2px; }
+        p { margin-bottom: 20px; text-align: center; max-width: 500px; line-height: 1.5; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Шаг 1: Ник -->
-        <div class="step active" id="step1">
-            <h1>Генератор Робуксов</h1>
-            <p>Введите ваш никнейм в Roblox:</p>
-            <input type="text" id="username" placeholder="Player123...">
-            <br>
-            <button onclick="nextStep(2)">Далее</button>
-        </div>
+<div id="game-container">
+    <div class="scanline"></div>
 
-        <!-- Шаг 2: Количество -->
-        <div class="step" id="step2">
-            <h1>Выбор суммы</h1>
-            <p>Сколько Робоуксов вам нужно?</p>
-            <input type="text" value="10,000" disabled style="color: #00A2FF; font-weight: bold;">
-            <br>
-            <button onclick="nextStep(3)">Получить</button>
-        </div>
+    <div id="top-bar">
+        <div class="stat-box">ОШИБКИ: <span id="errors">0</span>/3</div>
+        <div class="stat-box">ПРОВЕРЕНО: <span id="score">0</span></div>
+        <button class="btn" id="btn-pause">ПАУЗА</button>
+    </div>
 
-        <!-- Шаг 3: Шуточный фейк-запрос кукис -->
-        <div class="step" id="step3">
-            <h1 style="color: #FF3333;">Проверка безопасности!</h1>
-            <p>Для подтверждения, что вы не робот, введите ваши секретные Cookie-файлы (напишите любое слово):</p>
-            <input type="text" id="fake-cookie" placeholder="Например: куки...">
-            <br>
-            <button onclick="startScreamer()">АКТИВИРОВАТЬ ROBUX</button>
+    <div id="main-screen">
+        <div id="viewport">
+            <canvas id="personCanvas" width="320" height="380"></canvas>
+        </div>
+        
+        <div id="inspection-panel">
+            <div class="inspect-box" id="teeth-box">
+                <span class="inspect-title">Зубы</span>
+                <canvas id="teethCanvas" width="180" height="120"></canvas>
+            </div>
+            <div class="inspect-box" id="hands-box">
+                <span class="inspect-title">Руки</span>
+                <canvas id="handsCanvas" width="180" height="120"></canvas>
+            </div>
         </div>
     </div>
 
-    <!-- Полноэкранный скример -->
-    <div id="screamer-layer">
-        <!-- Жуткая зомби-девочка через открытый источник -->
-        <img src="https://unsplash.com" alt="BOO!">
+    <div id="controls">
+        <button class="btn" id="btn-teeth">Показать зубы</button>
+        <button class="btn" id="btn-hands">Показать руки</button>
+        <button class="btn btn-success" id="btn-pass">ПРОПУСТИТЬ</button>
+        <button class="btn btn-danger" id="btn-shoot">ВЫСТРЕЛИВАТЬ</button>
     </div>
 
-    <script>
-        function nextStep(stepNumber) {
-            // Переключение экранов
-            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
-            document.getElementById('step' + stepNumber).classList.add('active');
+    <div id="pause-screen" class="overlay hidden">
+        <h1>ПАУЗА</h1>
+        <p>Инспекция приостановлена.</p>
+        <button class="btn" id="btn-resume">ПРОДОЛЖИТЬ</button>
+    </div>
+
+    <div id="start-screen" class="overlay">
+        <h1>НЕ ЧЕЛОВЕК</h1>
+        <p>Внимательно проверяйте прибывающих.<br>
+        Приказывайте показать зубы и руки. Если обнаружите аномалию (лишние пальцы, острые зубы монстра) — <b>ликвидируйте</b>.<br>
+        Если человек нормален — <b>пропустите</b>.</p>
+        <button class="btn btn-danger" id="btn-start">НАЧАТЬ СМЕНУ</button>
+    </div>
+</div>
+
+<script>
+// --- Аудиосистема (Web Audio API) ---
+class AudioSystem {
+    constructor() {
+        this.ctx = null;
+        this.bgmNode = null;
+        this.isMuted = false;
+    }
+
+    init() {
+        if (!this.ctx) {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            this.startBGM();
+        }
+    }
+
+    // Фоновая мрачная эмбиент-музыка
+    startBGM() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(40, this.ctx.currentTime); // Низкий гул
+        
+        // Модуляция для эффекта тревоги
+        const lfo = this.ctx.createOscillator();
+        lfo.frequency.setValueAtTime(0.2, this.ctx.currentTime);
+        const lfoGain = this.ctx.createGain();
+        lfoGain.gain.setValueAtTime(5, this.ctx.currentTime);
+        lfo.connect(osc.frequency);
+        lfo.start();
+
+        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+        
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        this.bgmNode = osc;
+    }
+
+    // Звук выстрела
+    playShot() {
+        if (!this.ctx) return;
+        const bufferSize = this.ctx.sampleRate * 0.5;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
         }
 
-        function startScreamer() {
-            // Показываем слой со скримером
-            const screamer = document.getElementById('screamer-layer');
-            screamer.style.display = 'flex';
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
 
-            // Генерируем жуткий громкий звук через встроенный синтезатор частот браузера,
-            // чтобы не зависеть от внешних аудио-файлов (работает со 100% гарантией)
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            
-            // Создаем сильный искаженный шум (крик)
-            for (let i = 0; i < 5; i++) {
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                
-                oscillator.type = i % 2 === 0 ? 'sawtooth' : 'triangle'; // Агрессивная форма волны
-                oscillator.frequency.setValueAtTime(100 + (i * 150), audioCtx.currentTime); // Смесь частот
-                oscillator.frequency.exponentialRampToValueAtTime(800 + (i * 300), audioCtx.currentTime + 1.5);
-                
-                gainNode.gain.setValueAtTime(1.5, audioCtx.currentTime); // Высокая громкость
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2); // Затухание через 2 секунды
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                
-                oscillator.start();
-                oscillator.stop(audioCtx.currentTime + 2);
-            }
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1000, this.ctx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(10, this.ctx.currentTime + 0.4);
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        noise.start();
+    }
+
+    // Звук показа зубов (влажный/механический звук)
+    playTeethSound() {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(300, this.ctx.currentTime + 0.15);
+        osc.frequency.linearRampToValueAtTime(100, this.ctx.currentTime + 0.3);
+
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.3);
+    }
+}
+
+const audio = new AudioSystem();
+
+// --- Игровая логика ---
+let score = 0;
+let errors = 0;
+let isPaused = false;
+let currentSubject = null;
+let teethRevealed = false;
+let handsRevealed = false;
+
+// Элементы UI
+const personCanvas = document.getElementById('personCanvas');
+const teethCanvas = document.getElementById('teethCanvas');
+const handsCanvas = document.getElementById('handsCanvas');
+const pCtx = personCanvas.getContext('2d');
+const tCtx = teethCanvas.getContext('2d');
+const hCtx = handsCanvas.getContext('2d');
+
+const scoreEl = document.getElementById('score');
+const errorsEl = document.getElementById('errors');
+
+// Генерация субъекта
+function generateSubject() {
+    teethRevealed = false;
+    handsRevealed = false;
+    
+    // Очистка доп. холстов
+    tCtx.clearRect(0, 0, teethCanvas.width, teethCanvas.height);
+    hCtx.clearRect(0, 0, handsCanvas.width, handsCanvas.height);
+
+    const isAnomaly = Math.random() < 0.5;
+    let anomalyType = 'none'; // 'teeth', 'hands', 'both'
+
+    if (isAnomaly) {
+        const types = ['teeth', 'hands', 'both'];
+        anomalyType = types[Math.floor(Math.random() * types.length)];
+    }
+
+    currentSubject = {
+        isAnomaly: isAnomaly,
+        anomalyType: anomalyType,
+        skinColor: `hsl(${Math.random() * 30 + 15}, 30%, ${Math.random() * 20 + 40}%)`,
+        eyeColor: Math.random() > 0.5 ? '#3b2417' : '#21495c'
+    };
+
+    drawPerson();
+}
+
+// Отрисовка человека (Фотографический реалистичный стиль через Canvas SVG/Primitives)
+function drawPerson() {
+    pCtx.clearRect(0, 0, personCanvas.width, personCanvas.height);
+
+    // Тело / Одежда
+    pCtx.fillStyle = '#22252a';
+    pCtx.fillRect(60, 230, 200, 150);
+
+    // Шея
+    pCtx.fillStyle = currentSubject.skinColor;
+    pCtx.fillRect(135, 180, 50, 60);
+
+    // Голова
+    pCtx.beginPath();
+    pCtx.ellipse(160, 130, 65, 80, 0, 0, Math.PI * 2);
+    pCtx.fill();
+
+    // Глаза
+    pCtx.fillStyle = '#fff';
+    pCtx.beginPath();
+    pCtx.ellipse(135, 120, 12, 7, 0, 0, Math.PI * 2);
+    pCtx.ellipse(185, 120, 12, 7, 0, 0, Math.PI * 2);
+    pCtx.fill();
+
+    pCtx.fillStyle = currentSubject.eyeColor;
+    pCtx.beginPath();
+    pCtx.arc(135, 120, 5, 0, Math.PI * 2);
+    pCtx.arc(185, 120, 5, 0, Math.PI * 2);
+    pCtx.fill();
+
+    // Рот (закрыт)
+    pCtx.strokeStyle = '#5a2a2a';
+    pCtx.lineWidth = 3;
+    pCtx.beginPath();
+    pCtx.moveTo(140, 170);
+    pCtx.lineTo(180, 170);
+    pCtx.stroke();
+}
+
+// Отрисовка зубов крупным планом
+function drawTeeth() {
+    tCtx.clearRect(0, 0, teethCanvas.width, teethCanvas.height);
+    
+    // Губы / Десны
+    tCtx.fillStyle = '#7a2222';
+    tCtx.fillRect(10, 10, 160, 100);
+
+    tCtx.fillStyle = '#fff8e7'; // Цвет зубов
+    
+    const isBadTeeth = currentSubject.anomalyType === 'teeth' || currentSubject.anomalyType === 'both';
+
+    if (!isBadTeeth) {
+        // НОРМАЛЬНЫЕ ЗУБЫ (ровные прямоугольники)
+        for (let i = 0; i < 8; i++) {
+            // Верхние
+            tCtx.fillRect(25 + i * 16, 25, 14, 25);
+            tCtx.strokeRect(25 + i * 16, 25, 14, 25);
+            // Нижние
+            tCtx.fillRect(25 + i * 16, 65, 14, 25);
+            tCtx.strokeRect(25 + i * 16, 65, 14, 25);
         }
-    </script>
+    } else {
+        // АНОМАЛЬНЫЕ ЗУБЫ (острые клыки монстра)
+        tCtx.fillStyle = '#e6e68a';
+        for (let i = 0; i < 9; i++) {
+            // Верхние острые
+            tCtx.beginPath();
+            tCtx.moveTo(20 + i * 15, 20);
+            tCtx.lineTo(27 + i * 15, 55);
+            tCtx.lineTo(34 + i * 15, 20);
+            tCtx.fill();
+
+            // Нижние острые
+            tCtx.beginPath();
+            tCtx.moveTo(20 + i * 15, 95);
+            tCtx.lineTo(27 + i * 15, 60);
+            tCtx.lineTo(34 + i * 15, 95);
+            tCtx.fill();
+        }
+    }
+}
+
+// Отрисовка рук крупным планом
+function drawHands() {
+    hCtx.clearRect(0, 0, handsCanvas.width, handsCanvas.height);
+    
+    hCtx.fillStyle = currentSubject.skinColor;
+    const isBadHands = currentSubject.anomalyType === 'hands' || currentSubject.anomalyType === 'both';
+
+    const fingerCount = isBadHands ? 6 : 5; // Аномалия: 6 пальцев на руке
+
+    // Отрисовка ладони
+    hCtx.fillRect(40, 60, 100, 50);
+
+    // Пальцы
+    const fingerWidth = 100 / fingerCount - 3;
+    for (let i = 0; i < fingerCount; i++) {
+        hCtx.fillRect(42 + i * (fingerWidth + 3), 15, fingerWidth, 50);
+        
+        // Ногти
+        hCtx.fillStyle = isBadHands ? '#300' : '#e0c0c0';
+        hCtx.fillRect(44 + i * (fingerWidth + 3), 17, fingerWidth - 4, 10);
+        hCtx.fillStyle = currentSubject.skinColor;
+    }
+}
+
+// Обработка вердикта игрока
+function handleVerdict(shot) {
+    if (isPaused) return;
+
+    if (shot) {
+        audio.playShot();
+    }
+
+    const correctAction = (shot && currentSubject.isAnomaly) || (!shot && !currentSubject.isAnomaly);
+
+    if (correctAction) {
+        score++;
+        scoreEl.textContent = score;
+    } else {
+        errors++;
+        errorsEl.textContent = errors;
+        if (errors >= 3) {
+            alert(`ИГРА ОКОНЧЕНА! Вы пропустили слишком много аномалий или убили невиновных.\nВаш счет: ${score}`);
+            score = 0;
+            errors = 0;
+            scoreEl.textContent = score;
+            errorsEl.textContent = errors;
+        }
+    }
+
+    generateSubject();
+}
+
+// --- Обработчики событий ---
+document.getElementById('btn-start').addEventListener('click', () => {
+    audio.init();
+    document.getElementById('start-screen').classList.add('hidden');
+    generateSubject();
+});
+
+document.getElementById('btn-teeth').addEventListener('click', () => {
+    if (isPaused) return;
+    audio.playTeethSound();
+    teethRevealed = true;
+    drawTeeth();
+});
+
+document.getElementById('btn-hands').addEventListener('click', () => {
+    if (isPaused) return;
+    audio.playTeethSound();
+    handsRevealed = true;
+    drawHands();
+});
+
+document.getElementById('btn-pass').addEventListener('click', () => handleVerdict(false));
+document.getElementById('btn-shoot').addEventListener('click', () => handleVerdict(true));
+
+// Пауза
+const pauseScreen = document.getElementById('pause-screen');
+document.getElementById('btn-pause').addEventListener('click', () => {
+    isPaused = true;
+    pauseScreen.classList.remove('hidden');
+});
+
+document.getElementById('btn-resume').addEventListener('click', () => {
+    isPaused = false;
+    pauseScreen.classList.add('hidden');
+});
+</script>
 </body>
 </html>
